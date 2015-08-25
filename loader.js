@@ -27,6 +27,15 @@ var arrayBufferToBase64 = function(arrayBuffer) {
     return base64;
 };
 
+var getHandlerInvoker = function(evtType){
+    return function(e){
+        e.detail = this;
+        this.eventListeners[evtType].forEach(function(f){
+            f.call(window, e);
+        }.bind(this));
+    }.bind(this);
+};
+
 var Loader = function(fontFamily, url, extraCSSString, mime, format){
     this.eventListeners = {
         'beforesend': [],
@@ -38,12 +47,7 @@ var Loader = function(fontFamily, url, extraCSSString, mime, format){
 
     this.xhr = new XMLHttpRequest();
 
-    this.xhr.addEventListener('progress', function(e){
-        e.detail = this;
-        this.eventListeners['progress'].forEach(function(f){
-            f.call(window, e);
-        }.bind(this));
-    }.bind(this));
+    this.xhr.addEventListener('progress', getHandlerInvoker.call(this, 'progress'));
 
     this.xhr.addEventListener('load', function(e){
         if(this.xhr.status.toString()[0] === '2'){
@@ -62,25 +66,13 @@ var Loader = function(fontFamily, url, extraCSSString, mime, format){
             head.appendChild(style);
         }
 
-        e.detail = this;
-        this.eventListeners['load'].forEach(function(f){
-            f.call(window, e);
-        }.bind(this));
+        getHandlerInvoker.call(this, 'load')(e);
     }.bind(this));
 
-    this.xhr.addEventListener('abort', function(e){
-        e.detail = this;
-        this.eventListeners['abort'].forEach(function(f){
-            f.call(window, e);
-        }.bind(this));
-    }.bind(this));
+    this.xhr.addEventListener('abort', getHandlerInvoker.call(this, 'abort'));
 
-    this.xhr.addEventListener('error', function(e){
-        e.detail = this;
-        this.eventListeners['error'].forEach(function(f){
-            f.call(window, e);
-        }.bind(this));
-    }.bind(this));
+    this.xhr.addEventListener('error', getHandlerInvoker.call(this, 'error'));
+
 
     this.xhr.open('GET', url);
 
@@ -99,13 +91,10 @@ Loader.prototype.removeEventListener = function(evt, callback){
 };
 
 Loader.prototype.load = function(){
-    this.eventListeners['beforesend'].forEach(function(f){
-        f.call(window, {
-            name: 'beforesend',
-            target: this.xhr,
-            detail: this
-        })
-    }.bind(this));
+    getHandlerInvoker.call(this, 'beforesend')({
+        name: 'beforesend',
+        target: this.xhr
+    });
 
     this.xhr.send(null);
 };
