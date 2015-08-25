@@ -47,7 +47,6 @@ loader.addEventListener('progress', function(e){
 	// e.detail === loader
 });
 loader.load();
-});
 ```
 
 Licensed under Apache license. Forking and PR are of course welcome.
