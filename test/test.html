@@ -1,0 +1,62 @@
+<html>
+<head>
+<script src="../loader.js"></script>
+<style type="text/css">
+.para1{
+    font-family: FLUbuntuT, sans-serif;
+    font-weight: 400;
+}
+.para2{
+    font-family: FLUbuntuW, sans-serif;
+    font-weight: 300;
+}
+.weight1{
+    font-weight: 500;
+}
+.weight2{
+    font-weight: 700;
+}
+</style>
+</head>
+<body>
+<div class="para1">This div should be in Ubuntu font (with TTF) after font loads. <span class="weight1">This one is heavier</span> and <span class="weight2">This one is even heavier</span>.</div>
+<div class="para2">This another div should be in Ubuntu Light font (with WOFF) after font loads.</div>
+<div>Check console for various events!</div>
+<div>The Ubuntu Font Family is from <a href="http://font.ubuntu.com/">its official website</a>.</div>
+<script>
+var urLoader = new WebFontLoader('FLUbuntuT', 'Ubuntu-R.ttf', 'font-weight: 400;', 'application/font-sfnt', 'truetype');
+var umLoader = new WebFontLoader('FLUbuntuT', 'Ubuntu-M.ttf', 'font-weight: 500;', 'application/font-sfnt', 'truetype');
+var ubLoader = new WebFontLoader('FLUbuntuT', 'Ubuntu-B.ttf', 'font-weight: 700;', 'application/font-sfnt', 'truetype');
+var ulLoader = new WebFontLoader('FLUbuntuW', 'Ubuntu-L.woff', 'font-weight: 300;', 'application/font-woff', 'woff');
+
+urLoader.addEventListener('progress', function(evt){
+    console.log('The Ubuntu Regular font is progressing in loading. Total: ' + evt.total + ', loaded: ' + evt.loaded);
+});
+
+umLoader.addEventListener('load', function(evt){
+    console.log('The Ubuntu Medium font has been loaded. This is one event listener.');
+});
+
+umLoader.addEventListener('load', function(evt){
+    console.log('The Ubuntu Medium font has been loaded. This is another event listener. My associated loader is: ', evt.detail);
+});
+
+ubLoader.addEventListener('beforesend', function(evt){
+    console.log('The Ubuntu Bold font will be loaded. Take a look at the XHR used for that load:', evt.target);
+});
+
+var loadedHandler = function(evt){
+    console.log('This should not be printed in console at Ubuntu Light font loaded event!');
+};
+
+ulLoader.addEventListener('load', loadedHandler);
+ulLoader.removeEventListener('load', loadedHandler);
+
+urLoader.load();
+umLoader.load();
+ubLoader.load();
+ulLoader.load();
+
+</script>
+</body>
+</html>
