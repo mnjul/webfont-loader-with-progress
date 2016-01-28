@@ -24,10 +24,10 @@
 <div>Check console for various events!</div>
 <div>The Ubuntu Font Family is from <a href="http://font.ubuntu.com/">its official website</a>.</div>
 <script>
-var urLoader = new WebFontLoader('FLUbuntuT', 'Ubuntu-R.ttf', 'font-weight: 400;', 'application/font-sfnt', 'truetype');
-var umLoader = new WebFontLoader('FLUbuntuT', 'Ubuntu-M.ttf', 'font-weight: 500;', 'application/font-sfnt', 'truetype');
-var ubLoader = new WebFontLoader('FLUbuntuT', 'Ubuntu-B.ttf', 'font-weight: 700;', 'application/font-sfnt', 'truetype');
-var ulLoader = new WebFontLoader('FLUbuntuW', 'Ubuntu-L.woff', 'font-weight: 300;', 'application/font-woff', 'woff');
+var urLoader = new WebFontLoader('FLUbuntuT', 'Ubuntu-R.ttf', 'font-weight: 400;', 'truetype');
+var umLoader = new WebFontLoader('FLUbuntuT', 'Ubuntu-M.ttf', 'font-weight: 500;', 'truetype');
+var ubLoader = new WebFontLoader('FLUbuntuT', 'Ubuntu-B.ttf', 'font-weight: 700;', 'truetype');
+var ulLoader = new WebFontLoader('FLUbuntuW', 'Ubuntu-L.woff', 'font-weight: 300;', 'woff');
 
 urLoader.addEventListener('progress', function(evt){
     console.log('The Ubuntu Regular font is progressing in loading. Total: ' + evt.total + ', loaded: ' + evt.loaded);

@@ -1,32 +1,5 @@
 (function(exports){
 
-// See https://en.wikipedia.org/wiki/Base64
-var arrayBufferToBase64 = function(arrayBuffer) {
-    var base64 = '';
-    var codebook = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-
-    var bytesView = new Uint8Array(arrayBuffer);
-
-    var MASK = ((1 << 6) - 1);
-
-    for(var i = 0; i < bytesView.length - 2; i += 3){
-        var segment = (bytesView[i] << 16) | (bytesView[i + 1] << 8) | bytesView[i + 2];
-        base64 += codebook[segment >> 18] + codebook[(segment >> 12) & MASK] + codebook[(segment >> 6) & MASK] + codebook[segment & MASK];
-    }
-
-    // one remaining: append two zero bytes and pick the first two sextets
-    if(1 === bytesView.length - i){
-        var segment = bytesView[bytesView.length - 1] << 16;
-        base64 += codebook[segment >> 18] + codebook[(segment >> 12) & MASK] + '==';
-    // two remaining: append one zero bytes and pick the first three sextets
-    }else if(2 === bytesView.length - i){
-        var segment = (bytesView[bytesView.length - 2] << 16) | (bytesView[bytesView.length - 1] << 8);
-        base64 += codebook[segment >> 18] + codebook[(segment >> 12) & MASK] + codebook[(segment >> 6) & MASK] + '=';
-    }
-
-    return base64;
-};
-
 var getHandlerInvoker = function(evtType){
     return function(e){
         e.detail = this;
@@ -36,7 +9,7 @@ var getHandlerInvoker = function(evtType){
     }.bind(this);
 };
 
-var Loader = function(fontFamily, url, extraCSSString, mime, format){
+var Loader = function(fontFamily, url, extraCSSString, format){
     this.eventListeners = {
         'beforesend': [],
         'progress': [],
@@ -51,7 +24,7 @@ var Loader = function(fontFamily, url, extraCSSString, mime, format){
 
     this.xhr.addEventListener('load', function(e){
         if(this.xhr.status.toString()[0] === '2'){
-            var base64 = arrayBufferToBase64(this.xhr.response);
+            var blobURL = URL.createObjectURL(this.xhr.response);
 
             var head = document.getElementsByTagName('head')[0];
             var style = document.createElement('style');
@@ -59,7 +32,7 @@ var Loader = function(fontFamily, url, extraCSSString, mime, format){
             style.textContent = '\n' +
                 '@font-face{\n' +
                 '    font-family: ' + fontFamily + ';\n' +
-                '    src: url(\'data:' + mime + ';base64,' + base64 + '\') format(\'' + format + '\');\n' +
+                '    src: url(\'' + blobURL + '\') format(\'' + format + '\');\n' +
                 (extraCSSString ? ('    ' + extraCSSString + '\n') : '') +
                 '}\n';
 
@@ -76,7 +49,7 @@ var Loader = function(fontFamily, url, extraCSSString, mime, format){
 
     this.xhr.open('GET', url);
 
-    this.xhr.responseType = 'arraybuffer';
+    this.xhr.responseType = 'blob';
 };
 
 Loader.prototype.addEventListener = function(evt, callback){
